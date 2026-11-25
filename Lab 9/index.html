@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-Time Weather App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #333;
+      padding: 20px;
+    }
+
+    .weather-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: #1e3c72;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #dce1e7;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: #2a5298;
+    }
+
+    .search-box button {
+      padding: 12px 20px;
+      background: #2a5298;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .search-box button:hover {
+      background: #1e3c72;
+    }
+
+    .status-msg {
+      font-size: 0.95rem;
+      margin: 15px 0;
+      min-height: 22px;
+    }
+
+    .error {
+      color: #d93025;
+      background: #fce8e6;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .loading {
+      color: #2a5298;
+      font-style: italic;
+    }
+
+    .weather-result {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .city-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .temp {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #2a5298;
+      margin: 10px 0;
+    }
+
+    .condition {
+      font-size: 1.15rem;
+      color: #555;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .details {
+      display: flex;
+      justify-content: space-around;
+      background: #f4f7fb;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .detail-item strong {
+      font-size: 1.1rem;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-card">
+    <h1>Weather Forecast</h1>
+
+    <form class="search-box" id="weatherForm">
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="Enter city name (e.g., Kochi, London)"
+        autocomplete="off"
+      />
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="statusMessage" class="status-msg"></div>
+
+    <div class="weather-result" id="weatherResult">
+      <div class="city-name" id="cityName"></div>
+      <div class="temp" id="temperature"></div>
+      <div class="condition" id="condition"></div>
+
+      <div class="details">
+        <div class="detail-item">
+          <span>Humidity</span>
+          <strong id="humidity"></strong>
+        </div>
+        <div class="detail-item">
+          <span>Wind Speed</span>
+          <strong id="windSpeed"></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const weatherForm = document.getElementById("weatherForm");
+    const cityInput = document.getElementById("cityInput");
+    const statusMessage = document.getElementById("statusMessage");
+    const weatherResult = document.getElementById("weatherResult");
+
+    // Map WMO weather codes returned by Open-Meteo to readable descriptions
+    function getWeatherDescription(code) {
+      const weatherCodes = {
+        0: "Clear Sky",
+        1: "Mainly Clear",
+        2: "Partly Cloudy",
+        3: "Overcast",
+        45: "Foggy",
+        48: "Depositing Rime Fog",
+        51: "Light Drizzle",
+        53: "Moderate Drizzle",
+        55: "Dense Drizzle",
+        61: "Slight Rain",
+        63: "Moderate Rain",
+        65: "Heavy Rain",
+        71: "Slight Snowfall",
+        73: "Moderate Snowfall",
+        75: "Heavy Snowfall",
+        80: "Slight Rain Showers",
+        81: "Moderate Rain Showers",
+        82: "Violent Rain Showers",
+        95: "Thunderstorm",
+        96: "Thunderstorm with Slight Hail",
+        99: "Thunderstorm with Heavy Hail"
+      };
+      return weatherCodes[code] || "Unknown Condition";
+    }
+
+    function showError(message) {
+      weatherResult.style.display = "none";
+      statusMessage.className = "status-msg error";
+      statusMessage.textContent = message;
+    }
+
+    function showLoading(message) {
+      weatherResult.style.display = "none";
+      statusMessage.className = "status-msg loading";
+      statusMessage.textContent = message;
+    }
+
+    function clearStatus() {
+      statusMessage.className = "status-msg";
+      statusMessage.textContent = "";
+    }
+
+    async function fetchWeather(city) {
+      // 1. Validate empty or invalid input
+      const trimmedCity = city.trim();
+      if (!trimmedCity) {
+        showError("Please enter a valid city name.");
+        return;
+      }
+
+      if (!/^[a-zA-Z\s\-.,]+$/.test(trimmedCity)) {
+        showError("City name should contain only letters and spaces.");
+        return;
+      }
+
+      showLoading("Fetching weather data...");
+
+      try {
+        // 2. Step 1: Convert city name to latitude & longitude using Geocoding API
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(trimmedCity)}&count=1&language=en&format=json`;
+        const geoResponse = await fetch(geoUrl);
+
+        if (!geoResponse.ok) {
+          throw new Error("Unable to connect to location service.");
+        }
+
+        const geoData = await geoResponse.json();
+
+        // Handle city not found
+        if (!geoData.results || geoData.results.length === 0) {
+          showError(`City "${trimmedCity}" not found. Please check the spelling.`);
+          return;
+        }
+
+        const { name, country, latitude, longitude } = geoData.results[0];
+
+        // 3. Step 2: Fetch real-time weather using coordinates
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`;
+        const weatherResponse = await fetch(weatherUrl);
+
+        if (!weatherResponse.ok) {
+          throw new Error("Weather data is currently unavailable.");
+        }
+
+        const weatherData = await weatherResponse.json();
+
+        if (!weatherData.current) {
+          throw new Error("Incomplete weather data received.");
+        }
+
+        // 4. Update the DOM with fetched weather details
+        const current = weatherData.current;
+        document.getElementById("cityName").textContent = `${name}, ${country}`;
+        document.getElementById("temperature").textContent = `${current.temperature_2m}°C`;
+        document.getElementById("condition").textContent = getWeatherDescription(current.weather_code);
+        document.getElementById("humidity").textContent = `${current.relative_humidity_2m}%`;
+        document.getElementById("windSpeed").textContent = `${current.wind_speed_10m} km/h`;
+
+        clearStatus();
+        weatherResult.style.display = "block";
+      } catch (error) {
+        // Handle network offline or API failure
+        showError(error.message || "Failed to fetch weather data. Please try again later.");
+      }
+    }
+
+    weatherForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      fetchWeather(cityInput.value);
+    });
+  </script>
+</body>
+</html>

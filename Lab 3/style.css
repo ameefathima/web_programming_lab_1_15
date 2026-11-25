@@ -1,0 +1,303 @@
+
+/* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8faff;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
+    background-color: #1e3de8;
+    color: white;
+    padding: 20px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+header h1 {
+    font-size: 28px;
+}
+
+nav {
+    display: flex;
+    gap: 25px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #ffe066;
+}
+
+/* Product Introduction */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    padding: 70px 8%;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-text h2 {
+    font-size: 42px;
+    color: #1e3a8a;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero-text p {
+    font-size: 17px;
+    margin-bottom: 25px;
+    max-width: 500px;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn:hover {
+    background-color: #1e40af;
+    transform: translateY(-3px);
+}
+
+/* Product Image */
+.product {
+    width: 300px;
+    height: 300px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #dbeafe;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+    transition: transform 0.3s ease;
+}
+
+.product img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.product:hover {
+    transform: translateY(-5px);
+}
+
+.product:hover img {
+    transform: scale(1.06);
+}
+
+/* Features Section */
+.features {
+    padding: 60px 8%;
+    text-align: center;
+}
+
+.features h2 {
+    font-size: 32px;
+    color: #1e3a8a;
+    margin-bottom: 35px;
+}
+
+.feature-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card h3 {
+    color: #2563eb;
+    margin-bottom: 12px;
+}
+
+/* Sign Up Section */
+.signup {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #eff6ff;
+}
+
+.signup h2 {
+    font-size: 32px;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+.signup p {
+    margin-bottom: 25px;
+}
+
+.signup form {
+    max-width: 400px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.signup input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+}
+
+.signup input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.2);
+}
+
+.signup button {
+    padding: 13px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signup button:hover {
+    background-color: #1e40af;
+}
+
+/* Footer */
+footer {
+    background-color: #172b91;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Tablet Responsive Design */
+@media (max-width: 1024px) {
+    .hero {
+        padding: 50px 5%;
+    }
+
+    .hero-text h2 {
+        font-size: 34px;
+    }
+
+    .product {
+        width: 260px;
+        height: 260px;
+    }
+
+    .feature-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 480px) {
+    header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 5%;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    nav {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 6%;
+    }
+
+    .hero-text h2 {
+        font-size: 30px;
+    }
+
+    .hero-text p {
+        font-size: 15px;
+    }
+
+    .product {
+        width: 220px;
+        height: 220px;
+        margin-top: 10px;
+    }
+
+    .features {
+        padding: 40px 6%;
+    }
+
+    .features h2,
+    .signup h2 {
+        font-size: 27px;
+    }
+
+    .feature-container {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-card {
+        padding: 25px 18px;
+    }
+
+    .signup {
+        padding: 40px 6%;
+    }
+}

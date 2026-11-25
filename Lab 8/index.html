@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f0ff;
+            color: #252344;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+        h1 { text-align: center; color: #6d28d9; margin-bottom: 25px; }
+        .forms {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        .form-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; margin-bottom: 20px; }
+        .field { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 7px; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus { outline: none; border-color: #7c3aed; }
+        .error { color: #dc2626; font-size: 13px; margin-top: 5px; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        button:hover { background: #5b21b6; }
+        .success { color: #15803d; text-align: center; margin-top: 12px; }
+        @media (max-width: 650px) {
+            .forms { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Form Validation</h1>
+        <div class="forms">
+
+            <!-- Registration Form -->
+            <div class="form-box">
+                <h2>Registration</h2>
+                <form id="registerForm" novalidate>
+                    <div class="field">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                        <p class="error" id="nameError"></p>
+                    </div>
+                    <div class="field">
+                        <label for="regEmail">Email</label>
+                        <input type="text" id="regEmail" placeholder="Enter your email">
+                        <p class="error" id="regEmailError"></p>
+                    </div>
+                    <div class="field">
+                        <label for="regPassword">Password</label>
+                        <input type="password" id="regPassword" placeholder="Enter password">
+                        <p class="error" id="regPasswordError"></p>
+                    </div>
+                    <div class="field">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm password">
+                        <p class="error" id="confirmPasswordError"></p>
+                    </div>
+                    <button type="submit">Register</button>
+                    <p class="success" id="regSuccess"></p>
+                </form>
+            </div>
+
+            <!-- Login Form -->
+            <div class="form-box">
+                <h2>Login</h2>
+                <form id="loginForm" novalidate>
+                    <div class="field">
+                        <label for="loginEmail">Email</label>
+                        <input type="text" id="loginEmail" placeholder="Enter your email">
+                        <p class="error" id="loginEmailError"></p>
+                    </div>
+                    <div class="field">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                        <p class="error" id="loginPasswordError"></p>
+                    </div>
+                    <button type="submit">Login</button>
+                    <p class="success" id="loginSuccess"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Email validation
+        function validEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Password strength validation
+        function validPassword(password) {
+            return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+        }
+
+        // Display error message
+        function showError(id, message) {
+            document.getElementById(id).textContent = message;
+        }
+
+        // Registration form validation
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let valid = true;
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("regEmail").value.trim();
+            const password = document.getElementById("regPassword").value;
+            const confirm = document.getElementById("confirmPassword").value;
+
+            showError("nameError", "");
+            showError("regEmailError", "");
+            showError("regPasswordError", "");
+            showError("confirmPasswordError", "");
+            showError("regSuccess", "");
+
+            if (name === "") {
+                showError("nameError", "Name is required.");
+                valid = false;
+            }
+            if (email === "") {
+                showError("regEmailError", "Email is required.");
+                valid = false;
+            } else if (!validEmail(email)) {
+                showError("regEmailError", "Enter a valid email address.");
+                valid = false;
+            }
+            if (password === "") {
+                showError("regPasswordError", "Password is required.");
+                valid = false;
+            } else if (!validPassword(password)) {
+                showError("regPasswordError", "Use 8 characters with uppercase, lowercase and a number.");
+                valid = false;
+            }
+            if (confirm === "") {
+                showError("confirmPasswordError", "Please confirm your password.");
+                valid = false;
+            } else if (password !== confirm) {
+                showError("confirmPasswordError", "Passwords do not match.");
+                valid = false;
+            }
+
+            if (valid) {
+                showError("regSuccess", "Registration form validated successfully!");
+                this.reset();
+            }
+        });
+
+        // Login form validation
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let valid = true;
+
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+
+            showError("loginEmailError", "");
+            showError("loginPasswordError", "");
+            showError("loginSuccess", "");
+
+            if (email === "") {
+                showError("loginEmailError", "Email is required.");
+                valid = false;
+            } else if (!validEmail(email)) {
+                showError("loginEmailError", "Enter a valid email address.");
+                valid = false;
+            }
+            if (password.trim() === "") {
+                showError("loginPasswordError", "Password is required.");
+                valid = false;
+            }
+
+            if (valid) {
+                showError("loginSuccess", "Login form validated successfully!");
+                this.reset();
+            }
+        });
+    </script>
+</body>
+</html>
